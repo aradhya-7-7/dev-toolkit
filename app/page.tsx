@@ -97,12 +97,15 @@ export default function Home() {
           <p className="text-sm text-center">
             &copy; {new Date().getFullYear()} Dev Toolkit. All rights reserved.
           </p>
-          <div className="flex items-center gap-4">
-            <a href="#" className="text-sm hover:underline hover:text-primary">
+          <div className="flex items-center gap-4 pr-2">
+            <span className="text-sm hover:text-primary hover:text-blue-600 duration-200">
+              Want to make contributions? → here is the repo!
+            </span>
+            <a
+              href="https://github.com/aradhya-7-7/dev-toolkit.git"
+              className="text-sm hover:underline hover:text-primary"
+            >
               GitHub
-            </a>
-            <a href="#" className="text-sm hover:underline hover:text-primary">
-              Twitter
             </a>
           </div>
         </div>

@@ -10,7 +10,7 @@ export function SiteHeader() {
         </a>
         <nav className="flex items-center space-x-2">
           <a
-            href="https://github.com"
+            href="https://github.com/aradhya-7-7/dev-toolkit.git"
             target="_blank"
             rel="noreferrer"
             className="border border-black dark:border-white rounded-md w-9 h-9 flex items-center justify-center hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors"
