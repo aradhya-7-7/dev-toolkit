@@ -95,7 +95,7 @@ export default function Home() {
       <footer className="border-t border-border bg-card text-card-foreground">
         <div className="container mx-auto flex flex-col items-center justify-between gap-4 px-4 py-6 md:h-16 md:flex-row">
           <p className="text-sm text-center">
-            &copy; {new Date().getFullYear()} Dev Toolkit. All rights reserved.
+            &copy; {new Date().getFullYear()} DevToolkit. All rights reserved.
           </p>
           <div className="flex items-center gap-4 pr-2">
             <span className="text-sm hover:text-primary hover:text-blue-600 duration-200">
