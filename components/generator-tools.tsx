@@ -392,99 +392,100 @@ function JwtTool() {
   }
 
   return (
-    <Card className="bg-white text-black border border-black/20 shadow-md rounded-xl p-4 space-y-6">
-      <CardHeader>
-        <CardTitle className="text-xl font-bold">JWT Encoder / Decoder</CardTitle>
-        <CardDescription className="text-sm text-black/60">
-          Encode or decode JSON Web Tokens
-        </CardDescription>
-      </CardHeader>
+    <Card className="text-white border border-white/20 shadow-md rounded-xl p-4 space-y-6">
+  <CardHeader>
+    <CardTitle className="text-xl font-bold">JWT Encoder / Decoder</CardTitle>
+    <CardDescription className="text-sm text-white/60">
+      Encode or decode JSON Web Tokens
+    </CardDescription>
+  </CardHeader>
 
-      <CardContent className="space-y-4">
-        <div className="space-y-2">
-          <Label className="font-medium">JWT Token</Label>
-          <Input
-            value={token}
-            onChange={(e) => setToken(e.target.value)}
-            placeholder="Paste JWT here"
-            className="border border-black/20 bg-white text-black hover:border-black transition duration-200"
-          />
-          <Button
-            onClick={decodeJwt}
-            className="w-full border bg-black text-white hover:bg-white hover:text-black transition-all duration-200"
-          >
-            Decode
-          </Button>
-        </div>
+  <CardContent className="space-y-4">
+    <div className="space-y-2">
+      <Label className="font-medium">JWT Token</Label>
+      <Input
+        value={token}
+        onChange={(e) => setToken(e.target.value)}
+        placeholder="Paste JWT here"
+        className="border border-white/20 bg-black text-white hover:border-white transition duration-200"
+      />
+      <Button
+        onClick={decodeJwt}
+        className="w-full border bg-white text-black hover:bg-black hover:text-white transition-all duration-200"
+      >
+        Decode
+      </Button>
+    </div>
 
-        {decoded && (
-          <div className="space-y-2">
-            <Label className="font-medium">Decoded</Label>
-            <div className="relative">
-              <textarea
-                readOnly
-                rows={6}
-                value={decoded}
-                className="w-full font-mono p-2 rounded border border-black/20 bg-white text-black"
-              />
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={() => copyText(decoded)}
-                className="absolute top-2 right-2 hover:text-white hover:bg-black transition-all duration-200"
-              >
-                {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
-              </Button>
-            </div>
-          </div>
-        )}
-
-        <div className="space-y-2 pt-4 border-t border-black/10">
-          <Label className="font-medium">Payload (JSON)</Label>
+    {decoded && (
+      <div className="space-y-2">
+        <Label className="font-medium">Decoded</Label>
+        <div className="relative">
           <textarea
-            value={payload}
-            onChange={(e) => setPayload(e.target.value)}
-            rows={4}
-            placeholder='{"user": "admin"}'
-            className="w-full font-mono p-2 rounded border border-black/20 bg-white text-black"
-          />
-          <Input
-            value={secret}
-            onChange={(e) => setSecret(e.target.value)}
-            placeholder="Secret key (default: 'secret')"
-            className="border border-black/20 bg-white text-black hover:border-black transition duration-200"
+            readOnly
+            rows={6}
+            value={decoded}
+            className="w-full font-mono p-2 rounded border border-white/20 bg-black text-white"
           />
           <Button
-            onClick={encodeJwt}
-            className="w-full border bg-black text-white hover:bg-white hover:text-black transition-all duration-200"
+            size="sm"
+            variant="ghost"
+            onClick={() => copyText(decoded)}
+            className="absolute top-2 right-2 hover:text-black hover:bg-white transition-all duration-200"
           >
-            Encode
+            {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
           </Button>
         </div>
+      </div>
+    )}
 
-        {encoded && (
-          <div className="space-y-2">
-            <Label className="font-medium">Encoded JWT</Label>
-            <div className="relative">
-              <textarea
-                readOnly
-                value={encoded}
-                rows={4}
-                className="w-full font-mono p-2 rounded border border-black/20 bg-white text-black"
-              />
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={() => copyText(encoded)}
-                className="absolute top-2 right-2 hover:text-white hover:bg-black transition-all duration-200"
-              >
-                {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
-              </Button>
-            </div>
-          </div>
-        )}
-      </CardContent>
-    </Card>
+    <div className="space-y-2 pt-4 border-t border-white/10">
+      <Label className="font-medium">Payload (JSON)</Label>
+      <textarea
+        value={payload}
+        onChange={(e) => setPayload(e.target.value)}
+        rows={4}
+        placeholder='{"user": "admin"}'
+        className="w-full font-mono p-2 rounded border border-white/20 bg-black text-white"
+      />
+      <Input
+        value={secret}
+        onChange={(e) => setSecret(e.target.value)}
+        placeholder="Secret key (default: 'secret')"
+        className="border border-white/20 bg-black text-white hover:border-white transition duration-200"
+      />
+      <Button
+        onClick={encodeJwt}
+        className="w-full border bg-white text-black hover:bg-black hover:text-white transition-all duration-200"
+      >
+        Encode
+      </Button>
+    </div>
+
+    {encoded && (
+      <div className="space-y-2">
+        <Label className="font-medium">Encoded JWT</Label>
+        <div className="relative">
+          <textarea
+            readOnly
+            value={encoded}
+            rows={4}
+            className="w-full font-mono p-2 rounded border border-white/20 bg-black text-white"
+          />
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={() => copyText(encoded)}
+            className="absolute top-2 right-2 hover:text-black hover:bg-white transition-all duration-200"
+          >
+            {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+          </Button>
+        </div>
+      </div>
+    )}
+  </CardContent>
+</Card>
+
   )
 }
 

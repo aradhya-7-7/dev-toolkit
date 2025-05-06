@@ -1,22 +1,25 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Search } from "lucide-react"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { CodeTools } from "@/components/code-tools"
-import { GeneratorTools } from "@/components/generator-tools"
-import { ApiTools } from "@/components/api-tools"
-import { ConversionTools } from "@/components/conversion-tools"
-import { SiteHeader } from "@/components/site-header"
-import { allTools } from "@/lib/toolsData"
+import { useState } from "react";
+import { Search } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { CodeTools } from "@/components/code-tools";
+import { GeneratorTools } from "@/components/generator-tools";
+import { ApiTools } from "@/components/api-tools";
+import { ConversionTools } from "@/components/conversion-tools";
+import { SiteHeader } from "@/components/site-header";
+import { allTools } from "@/lib/toolsData";
+import DevTools from "@/components/dev-tools";
+import CssUiTools from "@/components/design-tools";
 
 export default function Home() {
-  const [searchTerm, setSearchTerm] = useState("")
+  const [searchTerm, setSearchTerm] = useState("");
 
-  const filteredTools = allTools.filter((tool) =>
-    tool.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    tool.description.toLowerCase().includes(searchTerm.toLowerCase())
-  )
+  const filteredTools = allTools.filter(
+    (tool) =>
+      tool.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      tool.description.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <div className="flex min-h-screen flex-col bg-background text-foreground">
@@ -28,7 +31,7 @@ export default function Home() {
           <input
             type="text"
             placeholder="Search for tools..."
-            className="w-full pl-10 py-3 rounded-md border border-border bg-card text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+            className="w-full pl-10 py-3 rounded border border-border bg-card text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
@@ -40,7 +43,7 @@ export default function Home() {
               filteredTools.map((tool, index) => (
                 <div
                   key={index}
-                  className="p-6 border rounded-lg bg-card text-card-foreground shadow-sm"
+                  className="p-6 border rounded bg-card text-card-foreground shadow-sm"
                 >
                   <h3 className="text-lg font-semibold mb-2">{tool.name}</h3>
                   <p className="text-sm text-muted-foreground mb-2">
@@ -57,7 +60,7 @@ export default function Home() {
           </div>
         ) : (
           <Tabs defaultValue="code" className="w-full">
-            <TabsList className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-7 mb-8 gap-2">
+            <TabsList className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-6 mb-8 gap-2">
               <TabsTrigger value="code">Code & Text</TabsTrigger>
               <TabsTrigger value="generators">Generators</TabsTrigger>
               <TabsTrigger value="api">API Tools</TabsTrigger>
@@ -66,16 +69,24 @@ export default function Home() {
               <TabsTrigger value="conversion">Conversion</TabsTrigger>
             </TabsList>
 
-            <TabsContent value="code"><CodeTools /></TabsContent>
-            <TabsContent value="generators"><GeneratorTools /></TabsContent>
-            <TabsContent value="api"><ApiTools /></TabsContent>
-            <TabsContent value="conversion"><ConversionTools /></TabsContent>
-            
+            <TabsContent value="code">
+              <CodeTools />
+            </TabsContent>
+            <TabsContent value="generators">
+              <GeneratorTools />
+            </TabsContent>
+            <TabsContent value="api">
+              <ApiTools />
+            </TabsContent>
+            <TabsContent value="conversion">
+              <ConversionTools />
+            </TabsContent>
+
             <TabsContent value="design">
-              <p className="text-muted-foreground">Design tools coming soon...</p>
+              <CssUiTools />
             </TabsContent>
             <TabsContent value="devtools">
-              <p className="text-muted-foreground">Dev tools coming soon...</p>
+              <DevTools />
             </TabsContent>
           </Tabs>
         )}
@@ -87,21 +98,15 @@ export default function Home() {
             &copy; {new Date().getFullYear()} Dev Toolkit. All rights reserved.
           </p>
           <div className="flex items-center gap-4">
-            <a
-              href="#"
-              className="text-sm hover:underline hover:text-primary"
-            >
+            <a href="#" className="text-sm hover:underline hover:text-primary">
               GitHub
             </a>
-            <a
-              href="#"
-              className="text-sm hover:underline hover:text-primary"
-            >
+            <a href="#" className="text-sm hover:underline hover:text-primary">
               Twitter
             </a>
           </div>
         </div>
       </footer>
     </div>
-  )
+  );
 }

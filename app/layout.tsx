@@ -5,6 +5,9 @@ import type { Metadata } from "next"
 
 export const metadata: Metadata = {
   title: "Dev Toolkit",
+  icons: {
+    icon: "/tools.png",
+  },
   description: "A comprehensive toolkit for developers with various utilities and tools",
 }
 
