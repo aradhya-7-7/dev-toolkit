@@ -2,9 +2,7 @@ import React, { useState, useRef } from "react";
 import { marked } from "marked";
 
 // Initialize Google Gemini API
-const API_KEY =
-  process.env.NEXT_PUBLIC_GEMINI_API_KEY ||
-  "AIzaSyB7M1shEJhJ3RABHgGcvKCVyg85UYZMJbY";
+const API_KEY = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
 
 const ResumeAnalyzer: React.FC = () => {
   const [file, setFile] = useState<File | null>(null);
