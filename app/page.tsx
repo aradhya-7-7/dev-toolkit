@@ -11,6 +11,7 @@ import { SiteHeader } from "@/components/site-header";
 import { allTools } from "@/lib/toolsData";
 import DevTools from "@/components/dev-tools";
 import CssUiTools from "@/components/design-tools";
+import ResumeAnalyzer from "@/components/resume-tool";
 
 export default function Home() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -60,14 +61,16 @@ export default function Home() {
           </div>
         ) : (
           <Tabs defaultValue="code" className="w-full">
-            <TabsList className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-6 mb-8 gap-2">
-              <TabsTrigger value="code">Code & Text</TabsTrigger>
-              <TabsTrigger value="generators">Generators</TabsTrigger>
-              <TabsTrigger value="api">API Tools</TabsTrigger>
-              <TabsTrigger value="design">Design</TabsTrigger>
-              <TabsTrigger value="devtools">Dev Tools</TabsTrigger>
-              <TabsTrigger value="conversion">Conversion</TabsTrigger>
-            </TabsList>
+            <TabsList className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-7 mb-8 gap-2">
+  <TabsTrigger value="code">Code & Text</TabsTrigger>
+  <TabsTrigger value="generators">Generators</TabsTrigger>
+  <TabsTrigger value="api">API Tools</TabsTrigger>
+  <TabsTrigger value="design">Design</TabsTrigger>
+  <TabsTrigger value="devtools">Dev Tools</TabsTrigger>
+  <TabsTrigger value="conversion">Conversion</TabsTrigger>
+  <TabsTrigger value="resume">Resume Analyser</TabsTrigger>
+</TabsList>
+
 
             <TabsContent value="code">
               <CodeTools />
@@ -87,6 +90,9 @@ export default function Home() {
             </TabsContent>
             <TabsContent value="devtools">
               <DevTools />
+            </TabsContent>
+            <TabsContent value="resume">
+              <ResumeAnalyzer />
             </TabsContent>
           </Tabs>
         )}
