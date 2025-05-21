@@ -1,8 +1,12 @@
 "use client";
-
 import { useState } from "react";
-import { Search } from "lucide-react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Search, Menu } from "lucide-react";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ui/tabs";
 import { CodeTools } from "@/components/code-tools";
 import { GeneratorTools } from "@/components/generator-tools";
 import { ApiTools } from "@/components/api-tools";
@@ -15,6 +19,17 @@ import ResumeAnalyzer from "@/components/resume-tool";
 
 export default function Home() {
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedTab, setSelectedTab] = useState("code");
+
+  const tabs = [
+    { value: "code", label: "Code & Text" },
+    { value: "generators", label: "Generators" },
+    { value: "api", label: "API Tools" },
+    { value: "design", label: "Design" },
+    { value: "devtools", label: "Dev Tools" },
+    { value: "conversion", label: "Conversion" },
+    { value: "resume", label: "Resume Analyser" },
+  ];
 
   const filteredTools = allTools.filter(
     (tool) =>
@@ -60,17 +75,30 @@ export default function Home() {
             )}
           </div>
         ) : (
-          <Tabs defaultValue="code" className="w-full">
-            <TabsList className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-7 mb-8 gap-2">
-  <TabsTrigger value="code">Code & Text</TabsTrigger>
-  <TabsTrigger value="generators">Generators</TabsTrigger>
-  <TabsTrigger value="api">API Tools</TabsTrigger>
-  <TabsTrigger value="design">Design</TabsTrigger>
-  <TabsTrigger value="devtools">Dev Tools</TabsTrigger>
-  <TabsTrigger value="conversion">Conversion</TabsTrigger>
-  <TabsTrigger value="resume">Resume Analyser</TabsTrigger>
-</TabsList>
+          <Tabs value={selectedTab} onValueChange={setSelectedTab} className="w-full">
+            {/* Mobile Dropdown */}
+            <div className="block md:hidden mb-4">
+              <select
+                value={selectedTab}
+                onChange={(e) => setSelectedTab(e.target.value)}
+                className="w-full rounded border border-border bg-card text-sm py-2 px-3 focus:outline-none focus:ring-2 focus:ring-primary"
+              >
+                {tabs.map((tab) => (
+                  <option key={tab.value} value={tab.value}>
+                    {tab.label}
+                  </option>
+                ))}
+              </select>
+            </div>
 
+            {/* Desktop Tabs */}
+            <TabsList className="hidden md:grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-7 mb-8 gap-2">
+              {tabs.map((tab) => (
+                <TabsTrigger key={tab.value} value={tab.value}>
+                  {tab.label}
+                </TabsTrigger>
+              ))}
+            </TabsList>
 
             <TabsContent value="code">
               <CodeTools />
@@ -84,7 +112,6 @@ export default function Home() {
             <TabsContent value="conversion">
               <ConversionTools />
             </TabsContent>
-
             <TabsContent value="design">
               <CssUiTools />
             </TabsContent>
