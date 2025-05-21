@@ -132,14 +132,19 @@ export default function Home() {
           </p>
           <div className="flex items-center gap-4 pr-2">
             <span className="text-sm hover:text-primary hover:text-blue-600 duration-200">
-              Want to make contributions? → here is the repo!
+              Want to make contributions? Here is the repo! ➡️
             </span>
-            <a
-              href="https://github.com/aradhya-7-7/dev-toolkit.git"
-              className="text-sm hover:underline hover:text-primary"
-            >
-              GitHub
-            </a>
+           <a
+  href="https://github.com/aradhya-7-7/dev-toolkit.git"
+  target="_blank"
+  rel="noopener noreferrer"
+  className="github-button"
+>
+  <span className="github-button-text">GitHub</span>
+  <span className="github-button-reflection"></span>
+</a>
+
+
           </div>
         </div>
       </footer>
