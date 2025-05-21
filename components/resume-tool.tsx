@@ -225,7 +225,7 @@ KEYWORDS AND ATS:
           </label>
 
  <div className="mb-4">
-  <label className="block text-zinc-100 text-base font-semibold mb-2">
+  <label className="block text-zinc-700 text-base font-semibold mb-2">
     Target Job Role / Title
   </label>
   <input
@@ -238,7 +238,7 @@ KEYWORDS AND ATS:
 </div>
 
 <div className="mb-6">
-  <label className="block text-zinc-100 text-base font-semibold mb-2">
+  <label className="block text-zinc-700 text-base font-semibold mb-2">
     Job Description (Optional)
   </label>
   <textarea
