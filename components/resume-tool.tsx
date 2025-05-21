@@ -2,11 +2,15 @@ import React, { useState, useRef } from "react";
 import { marked } from "marked";
 
 // Initialize Google Gemini API
-const API_KEY = process.env.NEXT_PUBLIC_GEMINI_API_KEY || "AIzaSyB7M1shEJhJ3RABHgGcvKCVyg85UYZMJbY";
+const API_KEY =
+  process.env.NEXT_PUBLIC_GEMINI_API_KEY;
 
 const ResumeAnalyzer: React.FC = () => {
   const [file, setFile] = useState<File | null>(null);
   const [fileContent, setFileContent] = useState<string | null>(null);
+  const [jobRole, setJobRole] = useState("");
+  const [jobDescription, setJobDescription] = useState("");
+
   const [loading, setLoading] = useState<boolean>(false);
   const [result, setResult] = useState<{
     suggestions: string;
@@ -40,24 +44,23 @@ const ResumeAnalyzer: React.FC = () => {
     setError(null);
   };
 
-  const extractTextFromFile = async (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = async () => {
-        try {
-          const text = `This is the extracted content from ${file.name}.
-          In a real application, you would use proper libraries to extract text from
-          PDF and Word documents. For PDFs, you might use pdf.js, and for Word documents,
-          you might use mammoth.js.`;
-          resolve(text);
-        } catch (error) {
-          reject("Failed to extract text from file");
-        }
-      };
-      reader.onerror = () => reject("Error reading file");
-      reader.readAsArrayBuffer(file);
-    });
-  };
+const extractTextFromFile = async (file: File): Promise<string> => {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const res = await fetch("/api/extract-text", {
+    method: "POST",
+    body: formData,
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to extract text from file.");
+  }
+
+  const data = await res.json();
+  return data.text || "";
+};
+
 
   const analyzeResume = async () => {
     if (!file) {
@@ -72,34 +75,37 @@ const ResumeAnalyzer: React.FC = () => {
       setFileContent(extractedText);
 
       const prompt = `
-I'm going to provide you with a resume. Please analyze it and provide:
-1. A score between 1 and 100 based on its quality, clarity, and effectiveness
-2. Specific suggestions for improvement in these areas:
+You are a resume reviewer AI. Analyze the following resume *in the context of the specified job role and description*, and provide:
+1. A score between 1 and 100 based on quality, clarity, and alignment with the job.
+2. Specific improvement suggestions for:
    - Format and presentation
    - Content and clarity
    - Impact statements and achievements
    - Keywords and ATS optimization
 
-Here's the resume content:
+JOB ROLE: ${jobRole || "Not specified"}
+JOB DESCRIPTION: ${jobDescription || "Not provided"}
+
+RESUME CONTENT:
 ${extractedText}
 
-Format your response as plain text in the following structure:
-SCORE: [number between 1-100]
+Respond using the following format:
+SCORE: [1-100]
 
 OVERALL SUGGESTIONS:
-[Your overall feedback and suggestions]
+...
 
 FORMAT AND PRESENTATION:
-[Your specific suggestions for improving format and presentation]
+...
 
 CONTENT AND CLARITY:
-[Your specific suggestions for improving content and clarity]
+...
 
 IMPACT STATEMENTS:
-[Your specific suggestions for improving impact statements and achievements]
+...
 
 KEYWORDS AND ATS:
-[Your specific suggestions for improving keywords and ATS optimization]
+...
 `;
 
       const response = await fetch(
@@ -131,18 +137,36 @@ KEYWORDS AND ATS:
       const score = scoreMatch ? parseInt(scoreMatch[1]) : 50;
 
       // Extract sections using regex
-      const overallMatch = text.match(/OVERALL SUGGESTIONS:([\s\S]*?)(?=FORMAT AND PRESENTATION:|$)/i);
-      const formatMatch = text.match(/FORMAT AND PRESENTATION:([\s\S]*?)(?=CONTENT AND CLARITY:|$)/i);
-      const contentMatch = text.match(/CONTENT AND CLARITY:([\s\S]*?)(?=IMPACT STATEMENTS:|$)/i);
-      const impactMatch = text.match(/IMPACT STATEMENTS:([\s\S]*?)(?=KEYWORDS AND ATS:|$)/i);
+      const overallMatch = text.match(
+        /OVERALL SUGGESTIONS:([\s\S]*?)(?=FORMAT AND PRESENTATION:|$)/i
+      );
+      const formatMatch = text.match(
+        /FORMAT AND PRESENTATION:([\s\S]*?)(?=CONTENT AND CLARITY:|$)/i
+      );
+      const contentMatch = text.match(
+        /CONTENT AND CLARITY:([\s\S]*?)(?=IMPACT STATEMENTS:|$)/i
+      );
+      const impactMatch = text.match(
+        /IMPACT STATEMENTS:([\s\S]*?)(?=KEYWORDS AND ATS:|$)/i
+      );
       const keywordsMatch = text.match(/KEYWORDS AND ATS:([\s\S]*?)(?=$)/i);
 
       // Convert to HTML
-      const suggestions = overallMatch ? await marked(overallMatch[1].trim()) : "No overall suggestions provided.";
-      const formatSuggestions = formatMatch ? await marked(formatMatch[1].trim()) : "No format suggestions provided.";
-      const contentSuggestions = contentMatch ? await marked(contentMatch[1].trim()) : "No content suggestions provided.";
-      const impactSuggestions = impactMatch ? await marked(impactMatch[1].trim()) : "No impact statement suggestions provided.";
-      const keywordSuggestions = keywordsMatch ? await marked(keywordsMatch[1].trim()) : "No keyword suggestions provided.";
+      const suggestions = overallMatch
+        ? await marked(overallMatch[1].trim())
+        : "No overall suggestions provided.";
+      const formatSuggestions = formatMatch
+        ? await marked(formatMatch[1].trim())
+        : "No format suggestions provided.";
+      const contentSuggestions = contentMatch
+        ? await marked(contentMatch[1].trim())
+        : "No content suggestions provided.";
+      const impactSuggestions = impactMatch
+        ? await marked(impactMatch[1].trim())
+        : "No impact statement suggestions provided.";
+      const keywordSuggestions = keywordsMatch
+        ? await marked(keywordsMatch[1].trim())
+        : "No keyword suggestions provided.";
 
       setResult({
         score,
@@ -150,7 +174,7 @@ KEYWORDS AND ATS:
         formatSuggestions,
         contentSuggestions,
         impactSuggestions,
-        keywordSuggestions
+        keywordSuggestions,
       });
     } catch (err) {
       setError(
@@ -163,13 +187,16 @@ KEYWORDS AND ATS:
   };
 
   const resetForm = () => {
-    setFile(null);
-    setFileContent(null);
-    setResult(null);
-    setError(null);
-    setActiveTab("format");
-    if (fileInputRef.current) fileInputRef.current.value = "";
-  };
+  setFile(null);
+  setFileContent(null);
+  setResult(null);
+  setError(null);
+  setJobRole("");
+  setJobDescription("");
+  setActiveTab("format");
+  if (fileInputRef.current) fileInputRef.current.value = "";
+};
+
 
   // Determine score color class
   const getScoreColorClass = (score: number) => {
@@ -196,6 +223,34 @@ KEYWORDS AND ATS:
           <label className="block text-gray-800 text-base font-semibold mb-3">
             Upload your resume (PDF or Word)
           </label>
+
+ <div className="mb-4">
+  <label className="block text-zinc-100 text-base font-semibold mb-2">
+    Target Job Role / Title
+  </label>
+  <input
+    type="text"
+    value={jobRole}
+    onChange={(e) => setJobRole(e.target.value)}
+    className="w-full px-4 py-2 bg-zinc-800 text-zinc-100 border border-zinc-700 rounded-md focus:outline-none focus:ring-2 focus:ring-zinc-600 placeholder-zinc-400"
+    placeholder="e.g. Frontend Developer"
+  />
+</div>
+
+<div className="mb-6">
+  <label className="block text-zinc-100 text-base font-semibold mb-2">
+    Job Description (Optional)
+  </label>
+  <textarea
+    value={jobDescription}
+    onChange={(e) => setJobDescription(e.target.value)}
+    rows={4}
+    className="w-full px-4 py-2 bg-zinc-800 text-zinc-100 border border-zinc-700 rounded-md focus:outline-none focus:ring-2 focus:ring-zinc-600 placeholder-zinc-400"
+    placeholder="Paste the job description here to tailor the feedback..."
+  ></textarea>
+</div>
+
+
           <input
             ref={fileInputRef}
             type="file"
@@ -209,7 +264,9 @@ KEYWORDS AND ATS:
               hover:file:bg-blue-200 transition"
           />
           {file && (
-            <p className="mt-2 text-sm text-gray-600">Selected file: {file.name}</p>
+            <p className="mt-2 text-sm text-gray-600">
+              Selected file: {file.name}
+            </p>
           )}
         </div>
         <div className="flex space-x-4">
@@ -224,13 +281,31 @@ KEYWORDS AND ATS:
           >
             {loading ? (
               <span className="flex items-center">
-                <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                <svg
+                  className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
                 </svg>
                 Analyzing...
               </span>
-            ) : "Analyze Resume"}
+            ) : (
+              "Analyze Resume"
+            )}
           </button>
 
           <button
@@ -251,37 +326,47 @@ KEYWORDS AND ATS:
         <div className="bg-white shadow-lg rounded-xl overflow-hidden">
           {/* Score Card */}
           <div className="px-6 py-6 bg-gray-50 border-b border-gray-200">
-            <h2 className="text-2xl font-bold mb-4 text-gray-800">Resume Score</h2>
+            <h2 className="text-2xl font-bold mb-4 text-gray-800">
+              Resume Score
+            </h2>
             <div className="flex items-center mb-4">
               <div className="w-full bg-gray-200 rounded-full h-6">
                 <div
-                  className={`h-6 rounded-full ${getProgressBarColorClass(result.score)} transition-all duration-500 ease-out`}
+                  className={`h-6 rounded-full ${getProgressBarColorClass(
+                    result.score
+                  )} transition-all duration-500 ease-out`}
                   style={{ width: `${result.score}%` }}
                 ></div>
               </div>
               <div className="ml-4">
-                <span className={`font-bold text-2xl ${getScoreColorClass(result.score)}`}>
+                <span
+                  className={`font-bold text-2xl ${getScoreColorClass(
+                    result.score
+                  )}`}
+                >
                   {result.score}
                 </span>
                 <span className="text-gray-500 text-sm ml-1">/ 100</span>
               </div>
             </div>
-            
+
             <div className="p-4 bg-white border border-gray-200 rounded">
-              <h3 className="font-bold text-gray-800 mb-2">Overall Assessment</h3>
+              <h3 className="font-bold text-gray-800 mb-2">
+                Overall Assessment
+              </h3>
               <div
                 className="text-gray-700 prose max-w-none"
                 dangerouslySetInnerHTML={{ __html: result.suggestions }}
               />
             </div>
           </div>
-          
+
           {/* Tabs + Content */}
           <div className="p-6">
             <h2 className="text-2xl font-bold mb-4 text-gray-800">
               Improvement Recommendations
             </h2>
-            
+
             <div className="border-b border-gray-200 mb-6">
               <nav className="flex space-x-8">
                 <button
@@ -322,34 +407,35 @@ KEYWORDS AND ATS:
                       : "text-gray-500 hover:text-blue-500"
                   }`}
                 >
-                  ATS Keywords
+                  Keywords & ATS
                 </button>
               </nav>
             </div>
-            
-            <div className="bg-white rounded-lg p-6 border border-gray-200">
+
+            <div className="text-gray-700 prose max-w-none">
               {activeTab === "format" && (
-                <div className="prose max-w-none">
-                  <div dangerouslySetInnerHTML={{ __html: result.formatSuggestions }} />
-                </div>
+                <div
+                  dangerouslySetInnerHTML={{ __html: result.formatSuggestions }}
+                />
               )}
-              
               {activeTab === "content" && (
-                <div className="prose max-w-none">
-                  <div dangerouslySetInnerHTML={{ __html: result.contentSuggestions }} />
-                </div>
+                <div
+                  dangerouslySetInnerHTML={{
+                    __html: result.contentSuggestions,
+                  }}
+                />
               )}
-              
               {activeTab === "impact" && (
-                <div className="prose max-w-none">
-                  <div dangerouslySetInnerHTML={{ __html: result.impactSuggestions }} />
-                </div>
+                <div
+                  dangerouslySetInnerHTML={{ __html: result.impactSuggestions }}
+                />
               )}
-              
               {activeTab === "keywords" && (
-                <div className="prose max-w-none">
-                  <div dangerouslySetInnerHTML={{ __html: result.keywordSuggestions }} />
-                </div>
+                <div
+                  dangerouslySetInnerHTML={{
+                    __html: result.keywordSuggestions,
+                  }}
+                />
               )}
             </div>
           </div>

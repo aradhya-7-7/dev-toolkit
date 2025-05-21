@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@bagiit/mammoth": "^1.4.22",
     "@google/generative-ai": "^0.24.1",
     "@hookform/resolvers": "^3.9.1",
     "@radix-ui/react-accordion": "1.2.2",
@@ -45,6 +46,7 @@
     "cmdk": "1.0.4",
     "date-fns": "4.1.0",
     "embla-carousel-react": "8.5.1",
+    "formidable": "^3.5.4",
     "html-minifier-terser": "^7.2.0",
     "input-otp": "1.4.1",
     "js-yaml": "^4.1.0",
@@ -54,6 +56,7 @@
     "marked": "^15.0.11",
     "next": "15.2.4",
     "next-themes": "^0.4.4",
+    "pdf-parse": "^1.1.1",
     "pdfjs-dist": "^5.2.133",
     "react": "^19",
     "react-day-picker": "8.10.1",
@@ -69,8 +72,10 @@
     "zod": "^3.24.1"
   },
   "devDependencies": {
+    "@types/formidable": "^3.4.5",
     "@types/js-yaml": "^4.0.9",
     "@types/node": "^22",
+    "@types/pdf-parse": "^1.1.5",
     "@types/pdfjs-dist": "^2.10.378",
     "@types/react": "^19",
     "@types/react-dom": "^19",
