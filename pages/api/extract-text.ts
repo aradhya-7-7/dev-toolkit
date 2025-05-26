@@ -1,53 +1,60 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import formidable from 'formidable';
-import fs from 'fs';
+import formidable, { File } from 'formidable';
+import fs from 'fs/promises';
 import pdfParse from 'pdf-parse';
 import mammoth from 'mammoth';
+import path from 'path';
 
-// Disable default bodyParser
+// Disable Next.js body parsing (we use formidable instead)
 export const config = {
   api: {
     bodyParser: false,
   },
 };
 
-const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-  const form = new formidable.IncomingForm();
+const readFileContent = async (file: File, mime: string) => {
+  const buffer = await fs.readFile(file.filepath);
 
-  form.parse(req, async (err: any, _fields: any, files: formidable.Files) => {
+  if (mime === 'application/pdf') {
+    const data = await pdfParse(buffer);
+    return data.text;
+  } else if (
+    mime ===
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+  ) {
+    const result = await mammoth.extractRawText({ buffer });
+    return result.value;
+  } else {
+    throw new Error('Unsupported file type');
+  }
+};
+
+const handler = async (req: NextApiRequest, res: NextApiResponse) => {
+  const form = formidable({
+    keepExtensions: true,
+    maxFileSize: 10 * 1024 * 1024, // 10MB
+    multiples: false,
+  });
+
+  form.parse(req, async (err, fields, files) => {
     if (err) {
+      console.error('Formidable error:', err);
       return res.status(500).json({ error: 'File parsing failed.' });
     }
 
-    const fileField = files.file;
-    const file = Array.isArray(fileField) ? fileField[0] : fileField;
-    if (!file) {
-      return res.status(400).json({ error: 'No file uploaded.' });
-    }
-    const filePath = (file as formidable.File).filepath;
-    const mime = (file as formidable.File).mimetype;
-
     try {
-      let text = '';
+      const fileField = files.file;
+      const file = Array.isArray(fileField) ? fileField[0] : fileField;
 
-      if (mime === 'application/pdf') {
-        const buffer = fs.readFileSync(filePath);
-        const data = await pdfParse(buffer);
-        text = data.text;
-      } else if (
-        mime ===
-          'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-      ) {
-        const buffer = fs.readFileSync(filePath);
-        const result = await mammoth.extractRawText({ buffer });
-        text = result.value;
-      } else {
-        return res.status(400).json({ error: 'Unsupported file type.' });
+      if (!file || !file.filepath || !file.mimetype) {
+        return res.status(400).json({ error: 'Invalid or missing file.' });
       }
 
-      res.status(200).json({ text });
-    } catch (error) {
-      res.status(500).json({ error: 'Failed to extract text from file.' });
+      const text = await readFileContent(file, file.mimetype);
+      return res.status(200).json({ text });
+    } catch (error: any) {
+      console.error('Extraction error:', error.message);
+      return res.status(500).json({ error: 'Failed to extract text from file.' });
     }
   });
 };
