@@ -2,7 +2,8 @@ import React, { useState, useRef } from "react";
 import { marked } from "marked";
 
 // Initialize Google Gemini API
-const API_KEY = process.env.NEXT_GEMINI_API_KEY;
+const apiKey = process.env.NEXT_GEMINI_API_KEY || 'AIzaSyDt7De8YbkuL06QuX0jH6ly_EXHMUAlSAQ';
+
 
 const ResumeAnalyzer: React.FC = () => {
   const [file, setFile] = useState<File | null>(null);
@@ -108,7 +109,7 @@ KEYWORDS AND ATS:
 `;
 
       const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${API_KEY}`,
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
         {
           method: "POST",
           headers: {
